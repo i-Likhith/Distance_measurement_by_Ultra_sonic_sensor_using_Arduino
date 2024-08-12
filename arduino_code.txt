@@ -1,0 +1,66 @@
+ #include <SR04.h>
+#include <Wire.h>
+#include <LiquidCrystal.h>
+#include <Servo.h>
+
+const int trigPin = 6;
+const int echoPin = 5;
+
+
+long duration;
+int distance;
+
+LiquidCrystal lcd(8, 9, 10, 11, 12, 13);
+
+int buzzerPin = A0;
+int notes[] = {262};
+
+
+void setup(){
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  lcd.begin(16, 2);
+  lcd.setCursor(0, 0);
+  lcd.print("Stay AWAY PLS!!");
+  delay(5000);
+  lcd.clear();  
+}
+
+void loop(){
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW); 
+
+  duration = pulseIn(echoPin, HIGH);
+  distance= duration*0.034/2;
+  Serial.print("Distance: ");
+  Serial.println(distance);
+  delay(1000);
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Distance:");
+  lcd.print(distance);
+
+  if(distance <= 5){
+    tone(buzzerPin, notes[0]);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Woah buddy! Way");
+    lcd.setCursor(0, 1);
+    lcd.print("too close");
+    delay(5000);
+    lcd.clear();
+  }
+  else{
+    noTone(A0);
+  }
+  if(distance >= 20){
+    lcd.setCursor(0, 0);
+    lcd.print("Perfect :) ");
+    delay(5000);
+    lcd.clear();
+  }
+}
